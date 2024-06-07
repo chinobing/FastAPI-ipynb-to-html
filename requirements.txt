@@ -1,0 +1,6 @@
+aiofiles==22.1.0
+SQLAlchemy==1.4.41
+Jinja2
+fastapi
+fastcore
+uvicorn

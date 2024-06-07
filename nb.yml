@@ -1,0 +1,9 @@
+format: 
+  html:
+    embed-resources: true
+    self-contained-math: true
+    toc: true
+    # code-fold: true
+    other-links:
+      - text: F10 金融知识体系
+        href: https://www.f10.org/
