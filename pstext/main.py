@@ -44,29 +44,28 @@ def escape_quarto_comments(lines):
 # FastAPI BackgroundTasks
 def bg_task(file_path: FilePath, ipynb_id: int, showcode: bool):
     """ipynb to html convesion task"""
-    with tempfile.TemporaryDirectory() as d:
-        hash_val = hashlib.md5(open(file_path,'rb').read()).hexdigest()
-        new_path = Path(f'{ipynb_output_path}/{hash_val}')
+    hash_val = hashlib.md5(open(file_path,'rb').read()).hexdigest()
+    new_path = Path(f'{ipynb_output_path}/{hash_val}')
 
-        # Load the notebook and modify non-compliant Quarto comments
-        with open(file_path, 'r', encoding='utf-8') as f:
-            notebook_data = json.load(f)
-            for cell in notebook_data['cells']:
-                if cell['cell_type'] == 'code':
-                    cell['source'] = escape_quarto_comments(cell['source'])
-        
-        # Save the modified notebook
-        with open(file_path, 'w') as f:
-            json.dump(notebook_data, f)
-        
-        if not new_path.exists():
-            mkdir(new_path, exist_ok=True, overwrite=True)
-            if showcode == True:
-                run(f"quarto render {file_path} --output-dir ../../{new_path} --no-execute --to html --metadata-file nb.yml")
-            if showcode == False:
-                run(f"quarto render {file_path} --output-dir ../../{new_path} --no-execute --to html --metadata-file nb-hide-code.yml")
-            # update conversion status
-            crud.update_status(ipynb_id = ipynb_id, hash_val = hash_val)
+    # Load the notebook and modify non-compliant Quarto comments
+    with open(file_path, 'r', encoding='utf-8') as f:
+        notebook_data = json.load(f)
+        for cell in notebook_data['cells']:
+            if cell['cell_type'] == 'code':
+                cell['source'] = escape_quarto_comments(cell['source'])
+    
+    # Save the modified notebook
+    with open(file_path, 'w') as f:
+        json.dump(notebook_data, f)
+    
+    if not new_path.exists():
+        mkdir(new_path, exist_ok=True, overwrite=True)
+        if showcode == True:
+            run(f"quarto render {file_path} --output-dir ../../{new_path} --no-execute --to html --metadata-file nb.yml")
+        if showcode == False:
+            run(f"quarto render {file_path} --output-dir ../../{new_path} --no-execute --to html --metadata-file nb-hide-code.yml")
+        # update conversion status
+        crud.update_status(ipynb_id = ipynb_id, hash_val = hash_val)
 
 
 
